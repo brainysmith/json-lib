@@ -9,6 +9,8 @@ version := "1.0"
 
 scalaVersion := "2.10.3"
 
+crossPaths := false
+
 libraryDependencies ++= Seq(
   "org.codehaus.jackson" % "jackson-core-asl" % "1.9.10",
   "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.10",
