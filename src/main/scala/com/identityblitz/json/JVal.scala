@@ -140,6 +140,7 @@ case class JObj(private val v: Seq[(String, JVal)]) extends JVal {
 
 object JObj {
 
+  def apply(): JObj = new JObj(Seq())
   def apply(name: String, value: JVal): JObj = new JObj(Seq((name, value)))
   def apply(v: (String, JVal)): JObj = new JObj(Seq(v))
 
