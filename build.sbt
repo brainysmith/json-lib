@@ -7,9 +7,19 @@ organization := "com.identityblitz"
 
 version := "0.1.0"
 
+licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
+
+homepage := Some(url("https://github.com/brainysmith/conf-lib"))
+
 scalaVersion := "2.10.3"
 
 crossPaths := false
+
+publishMavenStyle := true
+
+publishArtifact in Test := false
+
+resolvers += "Local Maven Repository" at Path.userHome.asFile.toURI.toURL + "/.m2/repository"
 
 libraryDependencies ++= Seq(
   "org.codehaus.jackson" % "jackson-core-asl" % "1.9.10",
