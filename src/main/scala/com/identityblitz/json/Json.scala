@@ -1,5 +1,7 @@
 package com.identityblitz.json
 
+import scala.language.implicitConversions
+
 /**
  *
  */

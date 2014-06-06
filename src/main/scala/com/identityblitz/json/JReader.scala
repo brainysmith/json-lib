@@ -3,6 +3,8 @@ package com.identityblitz.json
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
 import scala.collection.generic.CanBuildFrom
+import scala.language.higherKinds
+import scala.language.implicitConversions
 
 /**
  *

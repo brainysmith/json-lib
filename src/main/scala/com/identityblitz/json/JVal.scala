@@ -10,6 +10,7 @@ import java.io.StringWriter
 import org.codehaus.jackson.map.`type`.TypeFactory
 import scala.collection.mutable
 import scala.collection.generic.CanBuildFrom
+import scala.language.implicitConversions
 
 
 /**
