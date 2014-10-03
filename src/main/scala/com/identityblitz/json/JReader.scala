@@ -3,12 +3,7 @@ package com.identityblitz.json
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
 import scala.collection.generic.CanBuildFrom
-import scala.language.higherKinds
-import scala.language.implicitConversions
 
-/**
- *
- */
 @implicitNotFound("No JSON reader found for type ${T}. Try to implement an implicit JReader.")
 trait JReader[T] {
 
@@ -23,13 +18,6 @@ trait DefaultJReaders {
   implicit object IntJReader extends JReader[Int] {
     def read(v: JVal): JResult[Int] = v match {
       case JNum(i) => JSuccess(i.toInt)
-      case _ => JError("json.error.expected.number")
-    }
-  }
-
-  implicit object LongJReader extends JReader[Long] {
-    def read(v: JVal): JResult[Long] = v match {
-      case JNum(i) => JSuccess(i.toLong)
       case _ => JError("json.error.expected.number")
     }
   }
@@ -59,6 +47,36 @@ trait DefaultJReaders {
     def read(v: JVal): JResult[JVal] = JSuccess(v)
   }
 
+  implicit object JNumReader extends JReader[JNum] {
+    def read(v: JVal): JResult[JNum] = v match {
+      case o: JNum => JSuccess(o)
+      case _ => JError(("json.error.expected.number"))
+    }
+  }
+
+  implicit object JStrReader extends JReader[JStr] {
+    def read(v: JVal): JResult[JStr] = v match {
+      case o: JStr => JSuccess(o)
+      case _ => JError(("json.error.expected.string"))
+    }
+  }
+
+  implicit object JBoolReader extends JReader[JBool] {
+    def read(v: JVal): JResult[JBool] = v match {
+      case o: JBool => JSuccess(o)
+      case _ => JError(("json.error.expected.boolean"))
+    }
+  }
+
+  implicit object JObjReader extends JReader[JObj] {
+    def read(v: JVal): JResult[JObj] = v match {
+      case o: JObj => JSuccess(o)
+      case _ => JError(("json.error.expected.object"))
+    }
+  }
+
+  implicit val higherKinded = scala.language.higherKinds
+
   implicit def traversableJReader[I[_], A](implicit cb: CanBuildFrom[I[_], A, I[A]], jr: JReader[A]) = new JReader[I[A]] {
     def read(v: JVal): JResult[I[A]] = {
       v match {
@@ -77,6 +95,10 @@ trait DefaultJReaders {
           else {
             JError(errors.map{case Left(e) => e}.toSeq)
           }
+        }
+        case s: JVal => jr.read(s) match {
+          case JSuccess(j) => JSuccess((cb() += j).result())
+          case JError(er) => JError(er)
         }
         case _ => JError("json.error.expected.array")
       }

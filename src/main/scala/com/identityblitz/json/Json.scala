@@ -1,7 +1,5 @@
 package com.identityblitz.json
 
-import scala.language.implicitConversions
-
 /**
  *
  */
@@ -14,6 +12,8 @@ object Json {
   sealed trait JValWrapper extends NotNull
 
   case class JValWrapperImpl(value: JVal) extends JValWrapper
+
+  implicit val implicitConv = scala.language.implicitConversions
 
   implicit def jval2JValWrapper[T](value: T)(implicit writer: JWriter[T]) = JValWrapperImpl(writer.write(value))
 

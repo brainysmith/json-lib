@@ -3,9 +3,6 @@ package com.identityblitz.json
 
 import org.scalatest.{Matchers, FlatSpec}
 
-/**
- *
- */
 class JsonTest extends FlatSpec with Matchers  {
 
   behavior of "Checking of JSON serialization"
@@ -24,43 +21,43 @@ class JsonTest extends FlatSpec with Matchers  {
   behavior of "Checking of JSON deserialization"
 
   it should "deserialization of nested objects ({\"key\":{\"key2\":7}}) " in {
-    JVal.parseStr("{\"key\":{\"key2\":7}}").toJson shouldBe "{\"key\":{\"key2\":7}}"
+    JVal.parse("{\"key\":{\"key2\":7}}").toJson shouldBe "{\"key\":{\"key2\":7}}"
   }
 
   it should "deserialization of pure number (12) " in {
-    JVal.parseStr("12").toJson shouldBe "12"
+    JVal.parse("12").toJson shouldBe "12"
   }
 
   it should "deserialization of pure float number (12.7) " in {
-    JVal.parseStr("12.7").toJson shouldBe "12.7"
+    JVal.parse("12.7").toJson shouldBe "12.7"
   }
 
   it should "deserialization of pure string (\"text\") " in {
-    JVal.parseStr("\"text\"").toJson shouldBe "\"text\""
+    JVal.parse("\"text\"").toJson shouldBe "\"text\""
   }
 
   it should "deserialization of pure boolean (false) " in {
-    JVal.parseStr("false").toJson shouldBe "false"
+    JVal.parse("false").toJson shouldBe "false"
   }
 
   it should "deserialization of pure boolean (true) " in {
-    JVal.parseStr("true").toJson shouldBe "true"
+    JVal.parse("true").toJson shouldBe "true"
   }
 
   it should "deserialization of an object with null field ({\"key\":null}) " in {
-    JVal.parseStr("{\"key\":null}").toJson shouldBe "{\"key\":null}"
+    JVal.parse("{\"key\":null}").toJson shouldBe "{\"key\":null}"
   }
 
   it should "deserialization of an complex object  ({\"key1\":null,\"key2\":7,\"key3\":12.7,\"key4\":\"some text\",\"key5\":true}) " in {
-    JVal.parseStr("{\"key1\":null,\"key2\":7,\"key3\":12.7,\"key4\":\"some text\",\"key5\":true}").toJson shouldBe "{\"key4\":\"some text\",\"key5\":true,\"key1\":null,\"key2\":7,\"key3\":12.7}"
+    JVal.parse("{\"key1\":null,\"key2\":7,\"key3\":12.7,\"key4\":\"some text\",\"key5\":true}").toJson shouldBe "{\"key4\":\"some text\",\"key5\":true,\"key1\":null,\"key2\":7,\"key3\":12.7}"
   }
 
   it should "deserialization of an pure array ([12,\"text\"]) " in {
-    JVal.parseStr("[12, \"text\"]").toJson shouldBe "[12,\"text\"]"
+    JVal.parse("[12, \"text\"]").toJson shouldBe "[12,\"text\"]"
   }
 
   it should "deserialization of an really complex object ({\"key1\":12,\"key2\":\"value2\",\"key3\":true,\"key4\":[10,\"value2\",{\"key\":7}],\"key5\":{\"key6\":17,\"key7\":37},\"key8\":null}) " in {
-    JVal.parseStr("{\"key1\":12,\"key2\":\"value2\",\"key3\":true,\"key4\":[10,\"value2\", {\"key\":7}],\"key5\":{\"key6\":17,\"key7\":37},\"key8\":null}").toJson shouldBe "{\"key4\":[10,\"value2\",{\"key\":7}],\"key5\":{\"key6\":17,\"key7\":37},\"key8\":null,\"key1\":12,\"key2\":\"value2\",\"key3\":true}"
+    JVal.parse("{\"key1\":12,\"key2\":\"value2\",\"key3\":true,\"key4\":[10,\"value2\", {\"key\":7}],\"key5\":{\"key6\":17,\"key7\":37},\"key8\":null}").toJson shouldBe "{\"key4\":[10,\"value2\",{\"key\":7}],\"key5\":{\"key6\":17,\"key7\":37},\"key8\":null,\"key1\":12,\"key2\":\"value2\",\"key3\":true}"
   }
 
   val obj = Json.obj(
@@ -207,8 +204,94 @@ class JsonTest extends FlatSpec with Matchers  {
     (arr :+ 7).toJson shouldBe "[10,\"test\",true,7]"
   }
 
+  val sub = Json.obj(
+    "id" -> 193,
+    "login" -> "jon",
+    "trusted" -> true
+  )
 
+  import JsonTools._
+  import scala.language.postfixOps
 
+  case class SimpleSubject(id: Int) {
+    override def toString: String = "SimpleSubject(id = " + id + ")"
+  }
 
+  object SimpleSubject {
+    implicit def jreader = new JReader[SimpleSubject] {
+      override def read(v: JVal): JResult[SimpleSubject] =
+        ((v \ "id").read[Int] $).lift(SimpleSubject.apply)
+
+    }
+  }
+
+  case class Subject(id: Int, login: String) {
+    override def toString: String = "Subject(id = " + id + ", login = " + login + ")"
+  }
+
+  object Subject {
+    implicit def jreader = new JReader[Subject] {
+      override def read(v: JVal): JResult[Subject] =
+        ((v \ "id").read[Int] and
+          (v \ "login").read[String] $).lift(Subject.apply)
+
+    }
+  }
+
+  case class ComplexSubject(id: Int, login: String, trusted: Boolean) {
+    override def toString: String = "ComplexSubject(id = " + id + ", login = " + login + ", trusted = " + trusted + ")"
+  }
+
+  object ComplexSubject {
+    implicit def jreader = new JReader[ComplexSubject] {
+      override def read(v: JVal): JResult[ComplexSubject] =
+        ((v \ "id").read[Int] and
+          (v \ "login").read[String] and
+          (v \ "trusted").read[Boolean] $).lift(ComplexSubject.apply)
+
+    }
+  }
+
+  it should "deserialize simple JSON subject " in {
+    sub.as[SimpleSubject] shouldBe SimpleSubject(193)
+  }
+
+  it should "deserialize normal JSON subject " in {
+    sub.as[Subject] shouldBe Subject(193, "jon")
+  }
+
+  it should "deserialize complex JSON subject " in {
+    sub.as[ComplexSubject] shouldBe ComplexSubject(193, "jon", true)
+  }
+
+  val usrWoLastName = Json.obj(
+    "first_name" -> "jon"
+  )
+
+  val usr = Json.obj(
+    "first_name" -> "jon",
+    "last_name" -> "smith"
+  )
+
+  case class User(firstName: String, lastName: Option[String]) {
+    override def toString: String = "User(firstName = " + firstName + ", lastName = " + lastName + ")"
+  }
+
+  object User {
+    implicit def jreader = new JReader[User] {
+      override def read(v: JVal): JResult[User] =
+        ((v \ "first_name").read[String] and
+          (v \ "last_name").read[Option[String]] $).lift(User.apply)
+
+    }
+  }
+
+  it should "deserialize JSON user without last name " in {
+    usrWoLastName.as[User] shouldBe User("jon", None)
+  }
+
+  it should "deserialize JSON user " in {
+    usr.as[User] shouldBe User("jon", Some("smith"))
+  }
 
 }

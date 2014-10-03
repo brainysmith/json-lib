@@ -41,7 +41,10 @@ trait DefaultJWriters {
   }
 
   implicit def traversableJWriter[T : JWriter] = new JWriter[Traversable[T]] {
-    def write(o: Traversable[T]): JVal = JArr(o.map(Json.toJson(_)).toArray)
+    def write(o: Traversable[T]): JVal = o match {
+      case s if s.size == 1 => Json.toJson(s.head)
+      case t @ _ => JArr(t.map(Json.toJson(_)).toArray)
+    }
   }
 
   implicit def optionJWrite[T : JWriter] = new JWriter[Option[T]] {
