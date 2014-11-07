@@ -80,6 +80,10 @@ class JsonTest extends FlatSpec with Matchers  {
     obj \ "address" \ "city" shouldBe JStr("Moscow")
   }
 
+  it should "extracting 'address' from " + obj.toJson + " " in {
+    obj \ "address"  shouldBe Json.obj("city" -> "Moscow")
+  }
+
   behavior of "Checking of JSON marshalling"
 
   it should "marshalling Int " in {
@@ -134,6 +138,10 @@ class JsonTest extends FlatSpec with Matchers  {
 
   it should "unmarshalling " + JArr(Array(JNum(1), JNum(2), JNum(3))) + " " in {
     JArr(Array(JNum(1), JNum(2), JNum(3))).as[Array[Int]].toSeq.toString shouldBe Array(1, 2, 3).toSeq.toString
+  }
+
+  it should "unmarshalling " + Json.obj("1" -> JNum(1), "2" -> JNum(2), "3" -> JNum(3)) + " " in {
+    Json.obj("1" -> JNum(1), "2" -> JNum(2), "3" -> JNum(3)).as[Map[String,Int]].toMap.toString shouldBe Map("1" -> 1, "2" -> 2, "3" -> 3).toString
   }
 
   val objToTestOption = Json.obj("key1" -> "value1",
