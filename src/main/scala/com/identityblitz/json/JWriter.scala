@@ -20,10 +20,6 @@ trait DefaultJWriters {
     def write(o: Int): JVal = JNum(o)
   }
 
-  implicit object LongJWriter extends JWriter[Long] {
-    def write(o: Long): JVal = JNum(o)
-  }
-
   implicit object StringJWriter extends JWriter[String] {
     def write(o: String): JVal = JStr(o)
   }
