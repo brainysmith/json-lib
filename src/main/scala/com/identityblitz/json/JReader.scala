@@ -43,6 +43,13 @@ trait DefaultJReaders {
     }
   }
 
+  implicit def mapJReader[T: ClassTag](implicit reader: JReader[T]): JReader[Map[String,T]] = new JReader[Map[String,T]] {
+    def read(v: JVal): JResult[Map[String,T]] = v match {
+      case JObj(a) => JSuccess(a.map(e => e._1.toString -> e._2.as[T](reader)).toMap[String,T])
+      case _ => JError("json.error.expected.map")
+    }
+  }
+
   implicit object JValReader extends JReader[JVal] {
     def read(v: JVal): JResult[JVal] = JSuccess(v)
   }
