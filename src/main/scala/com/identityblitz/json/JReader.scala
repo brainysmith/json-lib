@@ -22,6 +22,13 @@ trait DefaultJReaders {
     }
   }
 
+  implicit object LongJReader extends JReader[Long] {
+    def read(v: JVal): JResult[Long] = v match {
+      case JNum(i) => JSuccess(i.toLong)
+      case _ => JError("json.error.expected.number")
+    }
+  }
+
   implicit object StringJReader extends JReader[String] {
     def read(v: JVal): JResult[String] = v match {
       case JStr(s) => JSuccess(s)
