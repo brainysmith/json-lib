@@ -254,6 +254,11 @@ trait JwtToolkit extends JwkToolkit {
     def fromBytes(a: Array[Byte]): ClaimsSet = new ClaimsSet(JVal.parse(new String(a, "UTF-8")).as[JObj])
   }
 
+  implicit object jvalPConverter extends PayloadConverter[JVal]{
+    def toBytes(orig: JVal): Array[Byte] = orig.toJson.getBytes("UTF-8")
+    def fromBytes(a: Array[Byte]): JVal = JVal.parse(new String(a, "UTF-8"))
+  }
+
   object JWT {
 
     /**

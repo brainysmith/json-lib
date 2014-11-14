@@ -172,6 +172,5 @@ class JwsTest extends FlatSpec with Matchers {
         .build
     }
   }
-
-
+  
 }
