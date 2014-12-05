@@ -5,7 +5,7 @@ name := "json-lib"
 
 organization := "com.identityblitz"
 
-version := "0.1.0"
+version := "0.1.0-SNAPSHOT"
 
 licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
 
@@ -29,9 +29,9 @@ publishTo <<= version { (v: String) =>
   val nexus = "http://build.reaxoft.loc/store/content/repositories"
   //val nexus = "https://oss.sonatype.org/"
   if (v.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "/blitz-dev")
+    Some("snapshots" at nexus + "/blitz-snapshots")
   else
-    Some("releases"  at nexus + "/blitz-dev")
+    Some("releases"  at nexus + "/blitz-releases")
 }
 
 libraryDependencies ++= Seq(
