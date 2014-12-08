@@ -21,17 +21,15 @@ publishArtifact in Test := false
 
 resolvers += "Local Maven Repository" at Path.userHome.asFile.toURI.toURL + "/.m2/repository"
 
-val nexus = "http://build.reaxoft.loc/store/content/repositories/"
+val reaxoft_local_repository = "http://build.reaxoft.loc/store/content/repositories"
 
 credentials += Credentials("Sonatype Nexus Repository Manager", "build.reaxoft.loc", "deployment", "oracle_1")
 
 publishTo <<= version { (v: String) =>
-  val nexus = "http://build.reaxoft.loc/store/content/repositories"
-  //val nexus = "https://oss.sonatype.org/"
   if (v.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "/blitz-snapshots")
+    Some("snapshots" at reaxoft_local_repository + "/blitz-snapshots")
   else
-    Some("releases"  at nexus + "/blitz-releases")
+    Some("releases"  at reaxoft_local_repository + "/blitz-releases")
 }
 
 libraryDependencies ++= Seq(
