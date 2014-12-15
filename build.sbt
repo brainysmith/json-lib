@@ -30,8 +30,8 @@ publishTo <<= version { (v: String) =>
   if (v.trim.endsWith("SNAPSHOT"))
     Some("snapshots" at reaxoft_local_repository + "/blitz-snapshots")
   else
-    Some("reaxoft-releases" at reaxoft_local_repository + "/blitz-releases")
-    //Some("maven-central" at maven_central + "service/local/staging/deploy/maven2")
+    //Some("reaxoft-releases" at reaxoft_local_repository + "/blitz-releases")
+    Some("maven-central" at maven_central + "service/local/staging/deploy/maven2")
 }
 
 libraryDependencies ++= Seq(
