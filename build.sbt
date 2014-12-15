@@ -5,7 +5,7 @@ name := "json-lib"
 
 organization := "com.identityblitz"
 
-version := "0.1.0-SNAPSHOT"
+version := "0.1.0"
 
 licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
 
